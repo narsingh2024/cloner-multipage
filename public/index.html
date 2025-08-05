@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Website Copier</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    .banner {
+      background-image: url('https://source.unsplash.com/1600x400/?web,technology');
+      background-size: cover;
+      background-position: center;
+      height: 250px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .banner h1 {
+      background-color: rgba(0,0,0,0.5);
+      padding: 20px 40px;
+      border-radius: 8px;
+      font-size: 2.5em;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    input[type="text"] {
+      padding: 12px;
+      font-size: 16px;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+
+    button {
+      padding: 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+
+    button:hover:not(:disabled) {
+      background-color: #0056b3;
+    }
+
+    #status {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 1em;
+      font-weight: bold;
+      color: #28a745;
+    }
+
+    .inspiration {
+      margin-top: 30px;
+      text-align: center;
+      font-style: italic;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="banner">
+    <h1>Clone Any Public Website Instantly</h1>
+  </div>
+
+  <div class="container">
+    <h2>Enter the website URL to clone</h2>
+    <form id="cloneForm" method="POST" action="/api/clone">
+      <input type="text" name="url" id="url" placeholder="https://example.com" required>
+      <button type="submit" id="copyBtn">Copy</button>
+    </form>
+    <div id="status"></div>
+
+    <div class="inspiration">
+      “Empower your curiosity. Clone, learn, and build.”
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('cloneForm');
+    const button = document.getElementById('copyBtn');
+    const status = document.getElementById('status');
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const url = document.getElementById('url').value.trim();
+      if (!url.startsWith('http')) {
+        status.innerText = '❌ Please enter a valid URL starting with http:// or https://';
+        status.style.color = 'red';
+        return;
+      }
+
+      button.disabled = true;
+      button.innerText = 'Copying...';
+      status.innerText = '📥 Downloading site, please wait...';
+      status.style.color = '#333';
+
+      fetch('/api/clone', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `url=${encodeURIComponent(url)}`
+      }).then(async (response) => {
+        if (response.ok) {
+          const blob = await response.blob();
+          const downloadUrl = window.URL.createObjectURL(blob);
+
+          const a = document.createElement('a');
+          a.href = downloadUrl;
+          a.download = 'cloned-site.zip';
+          a.click();
+
+          status.innerText = '✅ Website copied successfully. Download started.';
+          status.style.color = '#28a745';
+          button.innerText = 'Re-copy';
+        } else {
+          const errText = await response.text();
+          status.innerText = `❌ Failed to clone the site. ${errText}`;
+          status.style.color = 'red';
+          button.innerText = 'Try Again';
+        }
+      }).catch(err => {
+        console.error(err);
+        status.innerText = '❌ Network error or site blocked.';
+        status.style.color = 'red';
+        button.innerText = 'Try Again';
+      }).finally(() => {
+        button.disabled = false;
+      });
+    });
+  </script>
+</body>
+</html>

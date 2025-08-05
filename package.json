@@ -1,0 +1,25 @@
+{
+  "name": "colner",
+  "version": "1.0.0",
+  "description": "Copy any public website",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Narsingh",
+  "license": "ISC",
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "axios": "^1.11.0",
+    "body-parser": "^2.2.0",
+    "cheerio": "^1.1.2",
+    "express": "^5.1.0",
+    "fs-extra": "^11.3.0",
+    "mkdirp": "^0.5.1",
+    "node-fetch": "^3.3.2",
+    "puppeteer": "^24.15.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "rimraf": "^6.0.1"
+  }
+}
